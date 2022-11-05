@@ -1,6 +1,35 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+int f_Tab(vector<int>& nums, int k)
+{
+	int n = nums.size();
+
+	vector<vector<int>> dp(n, vector<int>(k + 1, 0));
+
+	for (int i = 0; i < n; i++)
+	{
+		dp[i][0] = 1;
+	}
+
+	dp[0][nums[0]] = 1;
+
+	for (int i = 1; i < n; i++)
+	{
+		for (int j = 1; j <= k; j++)
+		{
+			int notPick = dp[i - 1][j];
+
+			int pick = 0;
+			if (j >= nums[i]) pick = dp[i - 1][j - nums[i]];
+
+			dp[i][j] = pick + notPick;
+		}
+	}
+
+	return dp[n - 1][k];
+}
+
 int f(int i, vector<int>& nums, int k)
 {
 	if (i == 0)
@@ -24,7 +53,15 @@ int countSubsetSumToK(vector<int>& nums, int k)
 {
 	int n = nums.size();
 
-	return f(n - 1, nums, k);
+	int sum = 0;
+	for (auto it : nums)
+	{
+		sum += it;
+	}
+
+	int target = (sum - k) / 2;
+
+	return f_Tab(nums, target);
 }
 
 int main()
